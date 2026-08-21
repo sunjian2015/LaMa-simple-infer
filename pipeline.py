@@ -35,8 +35,10 @@ class LaMaPipeline:
                 **self.config["refiner"]
             )
         else: # generate no refine
+            image = image.to(self.config["device"])
+            mask = mask.to(self.config["device"])
             masked_image = image * (1 - mask)
-            x = torch.cat([masked_image, mask], dim=1).to(self.config["device"]) # (1, 4, h, w)
+            x = torch.cat([masked_image, mask], dim=1) # (1, 4, h, w)
             with torch.no_grad():
                 out = self.model(x)
                 out = mask * out + (1 - mask) * image # (1, 3, h, w)
