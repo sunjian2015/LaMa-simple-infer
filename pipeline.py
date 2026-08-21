@@ -42,6 +42,7 @@ class LaMaPipeline:
             with torch.no_grad():
                 out = self.model(x)
                 out = mask * out + (1 - mask) * image # (1, 3, h, w)
+                out = out[:, :, :src_h, :src_w]
 
         cur_res = out[0].permute(1, 2, 0).detach().cpu().numpy()
         cur_res = np.clip(cur_res * 255, 0, 255).astype('uint8')
